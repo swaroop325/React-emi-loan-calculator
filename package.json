@@ -1,0 +1,45 @@
+{
+  "name": "emi-slider",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.8.5",
+    "react-dom": "^16.8.5",
+    "react-particles-js": "^2.5.1",
+    "react-rangeslider": "^2.2.0",
+    "react-scripts": "2.1.8",
+    "tachyons": "^4.11.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "description": "I have done a lone amount calculator which allows a user to enter loan amount and loan duration in months with slider which then displays the interest rate and the monthly payment.",
+  "main": "index.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/swaroop325/React-emi-loan-calculator.git"
+  },
+  "keywords": [
+    "emi",
+    "calculator"
+  ],
+  "author": "swaroop.as",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/swaroop325/React-emi-loan-calculator/issues"
+  },
+  "homepage": "https://github.com/swaroop325/React-emi-loan-calculator#readme"
+}
