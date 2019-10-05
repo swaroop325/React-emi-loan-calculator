@@ -6,6 +6,7 @@ import styles from './style';
 import './App.css';
 import 'tachyons';
 import uuid from 'uuid';
+import Sidebar from "react-sidebar";
 
 const particlesOptions = {
   "particles": {
@@ -25,7 +26,7 @@ const particlesOptions = {
     }
   }
 }
-
+const mql = window.matchMedia(`(min-width: 800px)`);
 class App extends Component {
   constructor(props, context) {
     super(props, context)
@@ -34,14 +35,32 @@ class App extends Component {
       value2: 6,
       loanDetails: {},
       history: [],
+      sidebarDocked: mql.matches,
+      sidebarOpen: true
     }
+    this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
+    this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
   }
-  componentWillMount(){
+
+  componentWillMount() {
+    mql.addListener(this.mediaQueryChanged);
     if(localStorage.getItem('loanHistory')){
       this.setState({
         history: JSON.parse(localStorage.getItem('loanHistory'))
       })
     }
+  }
+ 
+  componentWillUnmount() {
+    this.state.mql.removeListener(this.mediaQueryChanged);
+  }
+ 
+  onSetSidebarOpen(open) {
+    this.setState({ sidebarOpen: open });
+  }
+ 
+  mediaQueryChanged() {
+    this.setState({ sidebarDocked: mql.matches, sidebarOpen: false });
   }
   
   amountChange = value => {
@@ -74,6 +93,16 @@ class App extends Component {
     })
   };
 
+  changeState = (newDetails) => {
+    this.setState({selectedId: newDetails.id});
+    this.setState({
+      value: newDetails.principal.amount,
+      value2: newDetails.numPayments
+    });
+    document.getElementById('rate').value = newDetails.interestRate
+    document.getElementById('pay').value = newDetails.monthlyPayment.amount
+    this.onSetSidebarOpen(false);
+  }
   calculate = () => {
     var that = this;
     let amt = this.state.value;
@@ -93,10 +122,26 @@ class App extends Component {
   }
 
   render() {
-    const { value, value2 } = this.state
+    const { value, value2 } = this.state;
     return (
       <div style={styles.root}>
         <h1 className='f1'>EMI CALCULATOR</h1>
+        <Sidebar
+        sidebar={<b><i className="el-icon-time"></i>History
+        <ul>
+        {this.state.history.map(history => (    
+          <li key={history.id} onClick={this.changeState.bind(this, history)}>${history.principal.amount} Loan, for {history.numPayments} Months</li>        ))}
+      </ul></b>
+      }
+        open={this.state.sidebarOpen}
+        onSetOpen={this.onSetSidebarOpen}
+        docked={this.state.sidebarDocked}
+        styles={{ sidebar: { background: "white" } }}
+      >
+        <button onClick={() => this.onSetSidebarOpen(true)}>
+          Open sidebar
+        </button>
+      </Sidebar>
         <Particles className='particles'
           params={particlesOptions}
         />
