@@ -36,33 +36,28 @@ class App extends Component {
       loanDetails: {},
       history: [],
       sidebarDocked: mql.matches,
-      sidebarOpen: true
+      sidebarOpen: false
     }
-    this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
     this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
   }
 
   componentWillMount() {
-    mql.addListener(this.mediaQueryChanged);
-    if(localStorage.getItem('loanHistory')){
+    if (localStorage.getItem('loanHistory')) {
       this.setState({
         history: JSON.parse(localStorage.getItem('loanHistory'))
       })
     }
   }
- 
-  componentWillUnmount() {
-    this.state.mql.removeListener(this.mediaQueryChanged);
-  }
- 
+
+  
   onSetSidebarOpen(open) {
     this.setState({ sidebarOpen: open });
   }
- 
+
   mediaQueryChanged() {
-    this.setState({ sidebarDocked: mql.matches, sidebarOpen: false });
+    this.setState({  sidebarOpen: false });
   }
-  
+
   amountChange = value => {
     this.setState({
       value: value
@@ -80,6 +75,14 @@ class App extends Component {
     this.calculate();
   };
 
+  getStyle = () => {
+    return {
+      paddingTop: '10px',
+      paddingBottom: '10px',
+      cursor: 'pointer'
+    }
+  }
+
   addHistory = () => {
     this.setState(state => {
       let lD = state.loanDetails;
@@ -94,7 +97,7 @@ class App extends Component {
   };
 
   changeState = (newDetails) => {
-    this.setState({selectedId: newDetails.id});
+    this.setState({ selectedId: newDetails.id });
     this.setState({
       value: newDetails.principal.amount,
       value2: newDetails.numPayments
@@ -120,28 +123,36 @@ class App extends Component {
         localStorage.setItem('loanHistory', JSON.stringify(that.state.history));
       })
   }
+  clearLocalStorage = () =>{
+    localStorage.clear();
+    this.setState({history: [], sidebarOpen: false})
+  }
 
   render() {
     const { value, value2 } = this.state;
+    var historyList = this.state.history.length === 0 ? 'NO HISTORY FOUND' : '';
+    var sidebarVisible = this.state.sidebarOpen ? 'hidden' : '';
     return (
       <div style={styles.root}>
         <h1 className='f1'>EMI CALCULATOR</h1>
         <Sidebar
-        sidebar={<b><i className="el-icon-time"></i>History
-        <ul>
-        {this.state.history.map(history => (    
-          <li key={history.id} onClick={this.changeState.bind(this, history)}>${history.principal.amount} Loan, for {history.numPayments} Months</li>        ))}
-      </ul></b>
-      }
-        open={this.state.sidebarOpen}
-        onSetOpen={this.onSetSidebarOpen}
-        docked={this.state.sidebarDocked}
-        styles={{ sidebar: { background: "white" } }}
-      >
-        <button onClick={() => this.onSetSidebarOpen(true)}>
-          Open sidebar
-        </button>
-      </Sidebar>
+          sidebar={<div style={{ minWidth: '200px' }}><div style={{
+            backgroundColor: 'aquamarine', fontWeight: 'bold', margin:'5px'}}>History</div>
+            <div>
+              <div style={{color:'red',marginTop:'15px'}}>{historyList}</div>
+              {this.state.history.map(history => (
+                <div className='history' style={this.getStyle()} key={history.id} onClick={this.changeState.bind(this, history)}>${history.principal.amount} Loan, for {history.numPayments} Months</div>))}
+            </div>
+            <button onClick={this.clearLocalStorage} style={{marginTop:'10px',marginBottom:'10px',backgroundColor:'azure',borderRadius:'10px'}}>RESET</button></div>
+          }
+          open={this.state.sidebarOpen}
+          onSetOpen={this.onSetSidebarOpen}
+          styles={{ sidebar: { background: "white" } }}
+        >
+          <button className={sidebarVisible} onClick={() => this.onSetSidebarOpen(true)} style={{ margin: '10px', borderRadius: '10px', backgroundColor: 'cornsilk', float: 'left' }}>
+            History
+          </button>
+        </Sidebar>
         <Particles className='particles'
           params={particlesOptions}
         />
